@@ -1,7 +1,15 @@
+import { Box } from "@/components/box";
+import { Navbar } from "./navbar";
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="h-screen w-screen max-w-full p-0">{children}</div>;
+  return (
+    <Box className="max-w-2xl">
+      <Navbar />
+      <div className="h-[calc(100vh-5rem)] w-full">{children}</div>
+    </Box>
+  );
 }
