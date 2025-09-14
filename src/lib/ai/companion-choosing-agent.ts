@@ -10,23 +10,26 @@ const openrouter = createOpenRouter({
 
 export const generateCompanion = async (habit: CreateHabitFormValues) => {
   const { object } = await generateObject({
-    model: openrouter.chat("qwen/qwen3-4b:free"),
+    model: openrouter.chat("meta-llama/llama-3.3-70b-instruct:free"),
     schema: z.object({
       companion: z.enum(["AURI", "KIRO", "SANA"]),
     }),
     prompt: `
-    Choose the best companion for the habit: ${habit.name}
-    The habit is about: ${habit.description}
-    The habit is scheduled to start on: ${habit.startDate.toISOString()}
-    The habit is scheduled to repeat every: ${habit.frequency}
-    The habit is scheduled to last for: ${habit.duration} days
+      You are classifying a new habit into one of three companions. 
+      Do NOT make creative guesses — output only the most fitting match.
 
-    Each companion brings a different personality and guidance style.  
-    Pick the one that feels most motivating for you:  
+      Habit: "${habit.name}"
+      Description: "${habit.description}"
 
-    🌱 Auri — Calm, focused, and thoughtful. Best for coding, deep work, or creative problem solving.  
-    💪 Kiro — Energetic, supportive, and consistent. Great for gym, movement, or habits needing daily push.  
-    📖 Sana — Gentle, wise, and patient. Perfect for study, reading, or slow, steady learning.  
+      Rules:
+      - Auri = for coding, deep focus, problem solving.  
+      - Kiro = for gym, workout, movement, building strength.  
+      - Sana = for study, reading, learning.  
+
+      If the text clearly mentions coding/programming → choose AURI.  
+      If it clearly mentions gym/exercise/walking/running → choose KIRO.  
+      If it clearly mentions studying/reading/learning/exams → choose SANA.  
+      If ambiguous → choose the closest fit conservatively. 
     `,
   });
 

@@ -9,7 +9,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as validations from "./validations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,14 +18,24 @@ import { LoadingButton } from "@/components/ui/loading-button";
 import { toast } from "sonner";
 import { Motion } from "@/components/motion";
 import { useRouter } from "next/navigation";
+import { parseAsString, useQueryState } from "nuqs";
 
 type Tab = "login" | "register";
 
 export const GetStartedTabs = () => {
-  const [tab, setTab] = useState<Tab>("login");
+  const [tab, setTab] = useQueryState(
+    "tab",
+    parseAsString.withDefault("login"),
+  );
+
+  const safeTab = tab === "login" || tab === "register" ? tab : "login";
 
   return (
-    <Tabs defaultValue={tab} onValueChange={(value) => setTab(value as Tab)}>
+    <Tabs
+      defaultValue={safeTab}
+      value={safeTab}
+      onValueChange={(value) => setTab(value)}
+    >
       <TabsList>
         <TabsTrigger value="login">Login</TabsTrigger>
         <TabsTrigger value="register">Register</TabsTrigger>
@@ -50,6 +59,7 @@ export const GetStartedTabs = () => {
 function RegisterForm({ setTab }: { setTab: (tab: Tab) => void }) {
   const form = useForm<validations.RegisterFormValues>({
     resolver: zodResolver(validations.registerSchema),
+    mode: "onChange",
     defaultValues: {
       email: "",
       password: "",
@@ -57,8 +67,6 @@ function RegisterForm({ setTab }: { setTab: (tab: Tab) => void }) {
       username: "",
     },
   });
-
-  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: validations.RegisterFormValues) => {
     await signUp.email(
@@ -69,17 +77,14 @@ function RegisterForm({ setTab }: { setTab: (tab: Tab) => void }) {
         name: data.username,
       },
       {
-        onResponse: () => setIsLoading(true),
         onSuccess: () => {
           toast.success("Registered successfully");
-          setIsLoading(false);
           setTab("login");
         },
         onError: (error) => {
           toast.error("Something went wrong", {
             description: error.error.message,
           });
-          setIsLoading(false);
         },
       },
     );
@@ -151,7 +156,7 @@ function RegisterForm({ setTab }: { setTab: (tab: Tab) => void }) {
             </FormItem>
           )}
         />
-        <LoadingButton type="submit" loading={isLoading}>
+        <LoadingButton type="submit" loading={form.formState.isSubmitting}>
           Register
         </LoadingButton>
       </form>
@@ -163,13 +168,12 @@ function LoginForm() {
   const router = useRouter();
   const form = useForm<validations.LoginFormValues>({
     resolver: zodResolver(validations.loginSchema),
+    mode: "onChange",
     defaultValues: {
       username: "",
       password: "",
     },
   });
-
-  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: validations.LoginFormValues) => {
     await signIn.username(
@@ -178,17 +182,14 @@ function LoginForm() {
         password: data.password,
       },
       {
-        onResponse: () => setIsLoading(true),
         onSuccess: () => {
           toast.success("Logged in successfully");
           router.push("/dashboard");
-          setIsLoading(false);
         },
         onError: (error) => {
           toast.error("Something went wrong", {
             description: error.error.message,
           });
-          setIsLoading(false);
         },
       },
     );
@@ -230,7 +231,7 @@ function LoginForm() {
             </FormItem>
           )}
         />
-        <LoadingButton type="submit" loading={isLoading}>
+        <LoadingButton type="submit" loading={form.formState.isSubmitting}>
           Login
         </LoadingButton>
       </form>

@@ -5,6 +5,7 @@ import { Afacad_Flux, DM_Mono, Alkalami } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "@/components/ui/sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const afacadFlux = Afacad_Flux({
   subsets: ["latin"],
@@ -39,8 +40,10 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <TRPCReactProvider>
-          <Toaster />
-          {children}
+          <NuqsAdapter>
+            <Toaster />
+            {children}
+          </NuqsAdapter>
         </TRPCReactProvider>
       </body>
     </html>

@@ -39,16 +39,17 @@ import type { HabitAgent } from "@prisma/client";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
+import { DateTime } from "luxon";
 
 export default function CreateHabitPage() {
   const form = useForm<CreateHabitFormValues>({
     resolver: zodResolver(createHabitSchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       description: "",
       duration: "30",
-      frequency: "DAILY",
-      startDate: new Date(),
+      startDate: DateTime.now().plus({ days: 1 }).toJSDate(),
     },
   });
 
@@ -117,13 +118,16 @@ export default function CreateHabitPage() {
                 <FormDescription>
                   Please provide a description for your habit. This will help
                   your companion better understand your habit and help you
-                  achieve your goals.
+                  achieve your goals. Please refrain from using any vague or
+                  generic descriptions. Be specific and clear about what you
+                  want to achieve. Example: &quot;I want to read 30 minutes of a
+                  book every day.&quot;
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 place-items-start gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
               name="duration"
@@ -159,66 +163,32 @@ export default function CreateHabitPage() {
             />
             <FormField
               control={form.control}
-              name="frequency"
+              name="startDate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Frequency</FormLabel>
+                  <FormLabel>Start Date</FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value.toString()}
-                    >
-                      <SelectTrigger>
-                        <SelectValue>
-                          {field.value
-                            ? `${capitalize(field.value)}`
-                            : "Select Frequency"}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(["DAILY", "WEEKLY", "BIWEEKLY"] as const).map(
-                          (frequency) => (
-                            <SelectItem key={frequency} value={frequency}>
-                              {capitalize(frequency)}
-                            </SelectItem>
-                          ),
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      {...field}
+                      type="date"
+                      value={
+                        field.value instanceof Date
+                          ? field.value.toISOString().split("T")[0]
+                          : typeof field.value === "string"
+                            ? field.value
+                            : ""
+                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.onChange(value ? new Date(value) : undefined);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="startDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Start Date</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder={`${new Date().toLocaleDateString()}`}
-                    type="date"
-                    value={
-                      field.value instanceof Date
-                        ? field.value.toISOString().split("T")[0]
-                        : typeof field.value === "string"
-                          ? field.value
-                          : ""
-                    }
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value ? new Date(value) : undefined);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <LoadingButton loading={isPending} type="submit">
             Create Habit
           </LoadingButton>
