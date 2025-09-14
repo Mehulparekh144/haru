@@ -4,7 +4,11 @@ import { db } from "@/server/db";
 
 const WINDOW_MINUTES = 15; // 15 minutes before and after the hour
 
-export const POST = async () => {
+export const POST = async (req: Request) => {
+  if (req.headers.get("x-cron-secret") !== env.CRON_SECRET) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const habits = await db.habit.findMany();
 
   // If the hour is 0 and the minute is less than the window minutes, we need to update the checkins
