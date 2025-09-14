@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
-import { Plus } from "lucide-react";
 import { headers } from "next/headers";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { BottomNavigation } from "./bottom-navigation";
+import { getUserHabits } from "./actions";
+import { Suspense } from "react";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -12,19 +12,16 @@ export default async function DashboardPage() {
   if (!session?.user) {
     redirect("/get-started");
   }
+
+  const habits = await getUserHabits(session.user.id);
+
   return (
     <div className="relative h-full w-full">
-      Dashboard
-      <Button
-        className="group absolute bottom-4 left-1/2 -translate-x-1/2"
-        variant={"default"}
-        asChild
-      >
-        <Link href="/dashboard/create">
-          Create Habit
-          <Plus className="transition-transform duration-300 group-hover:scale-110" />
-        </Link>
-      </Button>
+      <Suspense fallback={<div>Loading...</div>}>
+        <pre>{JSON.stringify(habits, null, 2)}</pre>
+      </Suspense>
+
+      <BottomNavigation />
     </div>
   );
 }
