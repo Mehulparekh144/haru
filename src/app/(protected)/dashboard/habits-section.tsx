@@ -32,7 +32,7 @@ export const HabitsSection = () => {
               {Array.from({ length: 3 }).map((_, index) => (
                 <Card
                   key={`skeleton-${index}`}
-                  className="bg-muted/20 h-full w-1/3 flex-shrink-0 rounded-xl leading-none shadow-md backdrop-blur-3xl"
+                  className="bg-muted/20 h-full w-full rounded-xl leading-none shadow-md backdrop-blur-3xl"
                 >
                   <CardHeader className="flex h-max items-start justify-between">
                     <Skeleton className="h-6 w-24" />
@@ -68,7 +68,7 @@ export const HabitsSection = () => {
                 }}
                 className={cn(
                   getHabitStyles(habit.agent),
-                  "h-full w-1/3 flex-shrink-0 rounded-xl leading-none shadow-md backdrop-blur-3xl",
+                  "h-full w-full rounded-xl leading-none shadow-md backdrop-blur-3xl",
                 )}
               >
                 <CardHeader className="flex h-max items-start justify-between">

@@ -40,6 +40,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { DateTime } from "luxon";
+import DatePicker from "@/components/date-picker/date-picker";
 
 export default function CreateHabitPage() {
   const form = useForm<CreateHabitFormValues>({
@@ -116,12 +117,8 @@ export default function CreateHabitPage() {
                   />
                 </FormControl>
                 <FormDescription>
-                  Please provide a description for your habit. This will help
-                  your companion better understand your habit and help you
-                  achieve your goals. Please refrain from using any vague or
-                  generic descriptions. Be specific and clear about what you
-                  want to achieve. Example: &quot;I want to read 30 minutes of a
-                  book every day.&quot;
+                  Be specific about what you want to achieve. Example:
+                  &quot;Read 30 minutes daily&quot;
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -139,14 +136,14 @@ export default function CreateHabitPage() {
                       onValueChange={field.onChange}
                       value={field.value.toString()}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue>
                           {field.value
                             ? `${field.value} days`
                             : "Select Duration"}
                         </SelectValue>
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="w-full">
                         <SelectItem value="14">14 days</SelectItem>
                         <SelectItem value="30">30 days</SelectItem>
                         <SelectItem value="60">60 days</SelectItem>
@@ -168,21 +165,7 @@ export default function CreateHabitPage() {
                 <FormItem>
                   <FormLabel>Start Date</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="date"
-                      value={
-                        field.value instanceof Date
-                          ? field.value.toISOString().split("T")[0]
-                          : typeof field.value === "string"
-                            ? field.value
-                            : ""
-                      }
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value ? new Date(value) : undefined);
-                      }}
-                    />
+                    <DatePicker date={field.value} setDate={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
