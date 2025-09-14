@@ -2,9 +2,9 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { BottomNavigation } from "./bottom-navigation";
-import { getUserHabits } from "./actions";
-import { Suspense } from "react";
 import { type Metadata } from "next";
+import { HabitsSection } from "./habits-section";
+import { RandomQuote } from "./random-quote";
 
 export const metadata: Metadata = {
   title: "Dashboard | Bloom With Haru",
@@ -19,14 +19,18 @@ export default async function DashboardPage() {
     redirect("/get-started");
   }
 
-  const habits = await getUserHabits(session.user.id);
-
   return (
-    <div className="relative h-full w-full">
-      <Suspense fallback={<div>Loading...</div>}>
-        <pre>{JSON.stringify(habits, null, 2)}</pre>
-      </Suspense>
-
+    <div className="relative h-full w-full space-y-4">
+      <div className="space-y-1.5">
+        <h1 className="text-secondary-foreground text-2xl font-bold">
+          Welcome Back, {session.user.name}
+        </h1>
+        <p className="text-muted-foreground font-mono text-xs">
+          What are you up to today?
+        </p>
+      </div>
+      <RandomQuote />
+      <HabitsSection />
       <BottomNavigation />
     </div>
   );

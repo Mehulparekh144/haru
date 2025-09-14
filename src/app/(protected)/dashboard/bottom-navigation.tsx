@@ -17,12 +17,6 @@ export const BottomNavigation = () => {
           <Plus className="transition-transform duration-300 group-hover:scale-110" />
         </Link>
       </Button>
-      <Button className="group" variant={"default"} asChild>
-        <Link href="/dashboard/checkins">
-          Daily Check In
-          <Calendar1 className="transition-transform duration-300 group-hover:scale-110" />
-        </Link>
-      </Button>
     </AnimatedContainer>
   );
 };

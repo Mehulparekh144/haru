@@ -71,6 +71,15 @@
   --shadow-opacity: var(--shadow-opacity);
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
+  --gradient-auri-from: var(--gradient-auri-from);
+  --gradient-auri-via: var(--gradient-auri-via);
+  --gradient-auri-to: var(--gradient-auri-to);
+  --gradient-kiro-from: var(--gradient-kiro-from);
+  --gradient-kiro-via: var(--gradient-kiro-via);
+  --gradient-kiro-to: var(--gradient-kiro-to);
+  --gradient-sana-from: var(--gradient-sana-from);
+  --gradient-sana-via: var(--gradient-sana-via);
+  --gradient-sana-to: var(--gradient-sana-to);
 }
 
 :root {
@@ -127,6 +136,17 @@
   --shadow-xl: 0px 4px 12px -2px hsl(15.0000 9.0090% 56.4706% / 0.03), 0px 8px 10px -3px hsl(15.0000 9.0090% 56.4706% / 0.03);
   --shadow-2xl: 0px 4px 12px -2px hsl(15.0000 9.0090% 56.4706% / 0.07);
   --tracking-normal: 0px;
+  --gradient-auri-from: oklch(0.96 0.004 91.4);   /* mist */
+  --gradient-auri-via:  oklch(0.82 0.017 70.5);   /* soft sky blue */
+  --gradient-auri-to:   oklch(0.68 0.022 169);    /* muted sage/teal */
+
+  --gradient-kiro-from: oklch(0.96 0.004 91.4);   /* cream */
+  --gradient-kiro-via:  oklch(0.84 0.053 28.5);   /* coral */
+  --gradient-kiro-to:   oklch(0.70 0.084 19.3);   /* soft red-orange */
+
+  --gradient-sana-from: oklch(0.98 0.003 84.6);   /* warm cream */
+  --gradient-sana-via:  oklch(0.90 0.030 70.0);   /* muted peach */
+  --gradient-sana-to:   oklch(0.75 0.020 133.1);  /* soft sage green */
 }
 
 .dark {
@@ -182,6 +202,17 @@
   --shadow-lg: 0px 4px 12px -2px hsl(0 0% 0% / 0.03), 0px 4px 6px -3px hsl(0 0% 0% / 0.03);
   --shadow-xl: 0px 4px 12px -2px hsl(0 0% 0% / 0.03), 0px 8px 10px -3px hsl(0 0% 0% / 0.03);
   --shadow-2xl: 0px 4px 12px -2px hsl(0 0% 0% / 0.07);
+  --gradient-auri-from: oklch(0.15 0.004 91.4);   /* dark mist */
+  --gradient-auri-via:  oklch(0.25 0.017 70.5);   /* dark sky blue */
+  --gradient-auri-to:   oklch(0.35 0.022 169);    /* dark sage/teal */
+
+  --gradient-kiro-from: oklch(0.15 0.004 91.4);   /* dark cream */
+  --gradient-kiro-via:  oklch(0.30 0.053 28.5);   /* dark coral */
+  --gradient-kiro-to:   oklch(0.40 0.084 19.3);   /* dark red-orange */
+
+  --gradient-sana-from: oklch(0.12 0.003 84.6);   /* dark warm cream */
+  --gradient-sana-via:  oklch(0.20 0.030 70.0);   /* dark muted peach */
+  --gradient-sana-to:   oklch(0.35 0.020 133.1);  /* dark sage green */
 }
 
 @layer base {

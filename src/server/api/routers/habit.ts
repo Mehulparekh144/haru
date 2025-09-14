@@ -58,4 +58,19 @@ export const habitRouter = createTRPCRouter({
 
       return habit;
     }),
+
+  getUserHabits: protectedProcedure.query(async ({ ctx }) => {
+    const habits = await ctx.db.habit.findMany({
+      where: {
+        userId: ctx.user.id,
+      },
+      orderBy: {
+        longestStreak: "desc",
+      },
+      include: {
+        habitCheckins: true,
+      },
+    });
+    return habits;
+  }),
 });
