@@ -5,6 +5,13 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Box } from "@/components/box";
 import { Suspense } from "react";
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Get Started | Bloom With Haru",
+  description:
+    "Start your journey to build better habits with your AI companion",
+};
 
 export default function GetStartedPage() {
   return (

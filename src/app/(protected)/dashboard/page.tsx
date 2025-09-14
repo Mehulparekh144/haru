@@ -4,6 +4,12 @@ import { redirect } from "next/navigation";
 import { BottomNavigation } from "./bottom-navigation";
 import { getUserHabits } from "./actions";
 import { Suspense } from "react";
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard | Bloom With Haru",
+  description: "Track your habits and progress with your AI companion",
+};
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
