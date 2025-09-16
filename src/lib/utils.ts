@@ -2,7 +2,7 @@ import { env } from "@/env";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { DateTime } from "luxon";
-import type { HabitAgent } from "@prisma/client";
+import { HabitDuration, type HabitCategory } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -44,18 +44,49 @@ export function getLocalDates(tz: string) {
   };
 }
 
-export function getHabitStyles(habitCompanion: HabitAgent) {
-  switch (habitCompanion) {
-    case "AURI": // Coding
+export function getHabitStyles(habitCategory: HabitCategory) {
+  switch (habitCategory) {
+    case "CODING": // Coding
       return "bg-gradient-to-br from-[var(--gradient-auri-from)] via-[var(--gradient-auri-via)] to-[var(--gradient-auri-to)]";
 
-    case "KIRO": // Gym
+    case "GYM": // Gym
       return "bg-gradient-to-br from-[var(--gradient-kiro-from)] via-[var(--gradient-kiro-via)] to-[var(--gradient-kiro-to)]";
 
-    case "SANA": // Study
+    case "SELF_IMPROVEMENT": // Study
       return "bg-gradient-to-br from-[var(--gradient-sana-from)] via-[var(--gradient-sana-via)] to-[var(--gradient-sana-to)]";
 
     default:
       return "bg-card";
   }
 }
+
+export function getThisWeekDates() {
+  const now = DateTime.now();
+  const startOfWeek = now.startOf("week");
+
+  const weekDates = Array.from({ length: 7 }).map((_, index) => {
+    return {
+      date: startOfWeek.plus({ days: index }).toISODate(),
+      day: startOfWeek.plus({ days: index }).toFormat("EEEE"),
+    };
+  });
+
+  return {
+    weekDates,
+  };
+}
+
+export const getDurationInNumber = (duration: HabitDuration) => {
+  switch (duration) {
+    case HabitDuration.FOURTEEN:
+      return 14;
+    case HabitDuration.THIRTY:
+      return 30;
+    case HabitDuration.SIXTY:
+      return 60;
+    case HabitDuration.NINETY:
+      return 90;
+    default:
+      return 0;
+  }
+};

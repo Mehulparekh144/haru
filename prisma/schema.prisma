@@ -81,10 +81,10 @@ enum HabitFrequency {
   BIWEEKLY
 }
 
-enum HabitAgent {
-  AURI
-  KIRO
-  SANA
+enum HabitCategory {
+  GYM
+  CODING
+  SELF_IMPROVEMENT
 }
 
 enum HabitDuration {
@@ -102,8 +102,8 @@ model Habit {
   startDate     DateTime
   timezone      String         @default("America/New_York")
   endDate       DateTime
-  agent         HabitAgent     @default(KIRO)
   createdAt     DateTime       @default(now())
+  habitCategory HabitCategory  @default(SELF_IMPROVEMENT)
   updatedAt     DateTime       @updatedAt
   userId        String
   currentStreak Int            @default(0)

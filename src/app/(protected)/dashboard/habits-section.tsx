@@ -1,15 +1,13 @@
 "use client";
 
-import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, getHabitStyles } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import type { Habit } from "@prisma/client";
-import { HabitDuration } from "@prisma/client";
+import type { Habit, HabitCheckin } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { HabitTotalDoneProgress } from "./habits/habit-total-done-progress";
 
 export const HabitsSection = () => {
   const router = useRouter();
@@ -22,10 +20,10 @@ export const HabitsSection = () => {
 
   return (
     <section className="mt-2">
-      <h1 className="text-secondary-foreground text-lg font-bold">
+      <h1 className="text-secondary-foreground my-4 text-xl font-bold">
         Your Current Habits
       </h1>
-      <ScrollArea className="mt-4 w-full">
+      <ScrollArea className="w-full">
         <div className="flex w-max gap-3 pb-4">
           {isLoading ? (
             <>
@@ -67,24 +65,17 @@ export const HabitsSection = () => {
                   router.push(`/dashboard/habits/${habit.id}`);
                 }}
                 className={cn(
-                  getHabitStyles(habit.agent),
+                  getHabitStyles(habit.habitCategory),
                   "h-full w-full rounded-xl leading-none shadow-md backdrop-blur-3xl",
                 )}
               >
-                <CardHeader className="flex h-max items-start justify-between">
+                <CardHeader className="h-max">
                   <CardTitle
-                    className="line-clamp-2 text-base"
+                    className="line-clamp-1 text-base"
                     title={habit.name}
                   >
                     {habit.name}
                   </CardTitle>
-                  <Avatar className="ring-primary size-10 ring-1">
-                    <AvatarImage
-                      src={`images/agents/${habit.agent.toLocaleLowerCase()}.png`}
-                      alt={habit.agent}
-                    />
-                    <AvatarFallback>{habit.agent.charAt(0)}</AvatarFallback>
-                  </Avatar>
                 </CardHeader>
                 <CardContent className="h-full">
                   <HabitCardContent {...habit} />
@@ -99,35 +90,14 @@ export const HabitsSection = () => {
   );
 };
 
-export const HabitCardContent = (habit: Habit) => {
-  const getDurationInNumber = (duration: HabitDuration) => {
-    switch (duration) {
-      case HabitDuration.FOURTEEN:
-        return 14;
-      case HabitDuration.THIRTY:
-        return 30;
-      case HabitDuration.SIXTY:
-        return 60;
-      case HabitDuration.NINETY:
-        return 90;
-      default:
-        return 0;
-    }
-  };
-
-  const percentage =
-    (habit.currentStreak / getDurationInNumber(habit.duration)) * 100;
-
+export const HabitCardContent = (
+  habit: Habit & { habitCheckins: HabitCheckin[] },
+) => {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center font-mono">
-      <AnimatedCircularProgressBar
-        label={`${habit.currentStreak} / ${getDurationInNumber(habit.duration)} days`}
-        value={percentage}
-        max={100}
-        className="my-4 text-sm"
-        gaugePrimaryColor="var(--primary)"
-        gaugeSecondaryColor="rgba(0, 0, 0, 0.1)"
-      />
+      <div className="my-4">
+        <HabitTotalDoneProgress habit={habit} />
+      </div>
       <div className="items-start space-y-2">
         <p className="text-secondary-foreground text-xs">
           Current Streak of {habit.currentStreak} days

@@ -21,7 +21,7 @@ export default function GetStartedPage() {
           <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-1.5">
               <h1 className="text-4xl font-bold">Get Started</h1>
-              <p className="text-accent-foreground font-mono text-sm">
+              <p className="text-muted-foreground font-mono text-sm">
                 Your streak begins with a single day.
               </p>
               <div className="mt-10">

@@ -1,9 +1,9 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { createHabitSchema } from "@/app/(protected)/dashboard/create/validations";
-import type { HabitAgent } from "@prisma/client";
 import { HabitDuration } from "@prisma/client";
-import { generateCompanion } from "@/lib/ai/companion-choosing-agent";
+import { generateCategory } from "@/lib/ai/category-choosing-agent";
 import { DateTime } from "luxon";
+import { z } from "zod";
 
 const getDuration = (duration: string): HabitDuration => {
   switch (duration) {
@@ -29,7 +29,7 @@ export const habitRouter = createTRPCRouter({
         .plus({ days: Number(duration) })
         .toJSDate();
 
-      const companion = await generateCompanion(input);
+      const category = await generateCategory(input);
 
       const habit = await ctx.db.habit.create({
         data: {
@@ -37,8 +37,8 @@ export const habitRouter = createTRPCRouter({
           description,
           startDate,
           endDate,
+          habitCategory: category,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          agent: companion as HabitAgent,
           duration: getDuration(duration),
           userId: ctx.user.id,
         },
@@ -73,4 +73,22 @@ export const habitRouter = createTRPCRouter({
     });
     return habits;
   }),
+
+  getUserHabit: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      const habit = await ctx.db.habit.findUnique({
+        where: { id },
+        include: {
+          habitCheckins: true,
+        },
+      });
+
+      return habit;
+    }),
 });
