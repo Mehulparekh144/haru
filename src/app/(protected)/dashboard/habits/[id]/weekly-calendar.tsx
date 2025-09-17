@@ -57,7 +57,7 @@ export const WeeklyCalendar = ({
                   <div className="flex w-full flex-col items-center justify-center gap-2">
                     <div
                       className={cn(
-                        "flex aspect-square w-full items-center justify-center rounded-md p-4",
+                        "flex aspect-square w-full items-center justify-center rounded-md p-0.5 md:p-4",
 
                         getHabitCheckinStyles(habitCheckin?.status ?? "PENDING")
                           .className,
@@ -68,7 +68,7 @@ export const WeeklyCalendar = ({
                           .icon
                       }
                     </div>
-                    <span className="font-mono text-sm font-bold">
+                    <span className="font-mono text-xs font-bold md:text-sm">
                       {date.day.slice(0, 3)}
                     </span>
                   </div>
