@@ -5,9 +5,10 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, getHabitStyles } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import type { Habit, HabitCheckin } from "@prisma/client";
+import { type Habit, type HabitCheckin } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { HabitTotalDoneProgress } from "./habits/habit-total-done-progress";
+import { Badge } from "@/components/ui/badge";
 
 export const HabitsSection = () => {
   const router = useRouter();
@@ -76,6 +77,7 @@ export const HabitsSection = () => {
                   >
                     {habit.name}
                   </CardTitle>
+                  <Badge variant={"outline"}>{habit.habitCategory}</Badge>
                 </CardHeader>
                 <CardContent className="h-full">
                   <HabitCardContent {...habit} />

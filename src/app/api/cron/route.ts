@@ -1,8 +1,7 @@
 import { env } from "@/env";
 import { getLocalDates, logger } from "@/lib/utils";
 import { db } from "@/server/db";
-
-const WINDOW_MINUTES = 15; // 15 minutes before and after the hour
+import { DateTime } from "luxon";
 
 export const POST = async (req: Request) => {
   if (req.headers.get("x-cron-secret") !== env.CRON_SECRET) {
@@ -19,96 +18,103 @@ export const POST = async (req: Request) => {
 
     if (!yesterday || !hour || !minute || !today) continue;
 
-    if (
-      (hour === 0 && minute < WINDOW_MINUTES) ||
-      env.NODE_ENV === "development"
-    ) {
-      // 1. Update all pending checkins for yesterday to skipped
-      const updated = await db.habitCheckin.updateMany({
-        where: {
-          habitId: habit.id,
-          timestamp: new Date(yesterday),
-          status: "PENDING",
-        },
-        data: {
-          status: "SKIPPED",
-        },
-      });
+    // 1. Update all pending checkins for yesterday and earlier to skipped
+    const yesterdayDate = DateTime.fromISO(yesterday)
+      .setZone(habit.timezone)
+      .endOf("day")
+      .toJSDate();
 
-      checkinsModified += updated.count;
+    const updated = await db.habitCheckin.updateMany({
+      where: {
+        habitId: habit.id,
+        timestamp: {
+          lte: yesterdayDate,
+        },
+        status: "PENDING",
+      },
+      data: {
+        status: "SKIPPED",
+      },
+    });
 
-      // 2. Upsert the pending checkin for today
-      const data = await db.habit.findUnique({
-        where: {
-          id: habit.id,
-        },
-        select: {
-          startDate: true,
-        },
-      });
+    checkinsModified += updated.count;
 
-      if (data && data.startDate > new Date(today)) {
-        continue;
-      }
+    // 2. Upsert the pending checkin for today
+    const data = await db.habit.findUnique({
+      where: {
+        id: habit.id,
+      },
+      select: {
+        startDate: true,
+      },
+    });
 
-      const upserted = await db.habitCheckin.upsert({
-        where: {
-          habitId_timestamp: {
-            habitId: habit.id,
-            timestamp: new Date(today),
-          },
-        },
-        update: {},
-        create: {
-          habitId: habit.id,
-          timestamp: new Date(today),
-          status: "PENDING",
-        },
-      });
-
-      checkinsUpserted += upserted ? 1 : 0;
-
-      // 3. Update streaks
-      const streaks = await db.habitCheckin.findMany({
-        where: {
-          habitId: habit.id,
-        },
-        orderBy: {
-          timestamp: "desc",
-        },
-      });
-
-      const { currentStreak, longestStreak } = streaks.reduce(
-        (acc, streak) => {
-          if (streak.status === "COMPLETED") {
-            acc.currentStreak++;
-            acc.longestStreak = Math.max(acc.longestStreak, acc.currentStreak);
-          } else {
-            acc.currentStreak = 0;
-          }
-          return acc;
-        },
-        {
-          currentStreak: 0,
-          longestStreak: 0,
-        },
-      );
-
-      await db.habit.update({
-        where: {
-          id: habit.id,
-        },
-        data: {
-          currentStreak,
-          longestStreak,
-        },
-      });
-
-      logger(
-        `Updated habit ${habit.name} with ${checkinsModified} checkins modified and ${checkinsUpserted} checkins upserted`,
-        "info",
-      );
+    if (data && DateTime.fromJSDate(data.startDate) > DateTime.fromISO(today)) {
+      continue;
     }
+
+    const todayDate = DateTime.fromISO(today)
+      .setZone(habit.timezone)
+      .startOf("day")
+      .toJSDate();
+
+    const upserted = await db.habitCheckin.upsert({
+      where: {
+        habitId_timestamp: {
+          habitId: habit.id,
+          timestamp: todayDate,
+        },
+      },
+      update: {},
+      create: {
+        habitId: habit.id,
+        timestamp: todayDate,
+        status: "PENDING",
+      },
+    });
+
+    checkinsUpserted += upserted ? 1 : 0;
+
+    // 3. Update streaks
+    const streaks = await db.habitCheckin.findMany({
+      where: {
+        habitId: habit.id,
+      },
+      orderBy: {
+        timestamp: "desc",
+      },
+    });
+
+    const { currentStreak, longestStreak } = streaks.reduce(
+      (acc, streak) => {
+        if (streak.status === "COMPLETED") {
+          acc.currentStreak++;
+          acc.longestStreak = Math.max(acc.longestStreak, acc.currentStreak);
+        } else {
+          acc.currentStreak = 0;
+        }
+        return acc;
+      },
+      {
+        currentStreak: 0,
+        longestStreak: 0,
+      },
+    );
+
+    await db.habit.update({
+      where: {
+        id: habit.id,
+      },
+      data: {
+        currentStreak,
+        longestStreak,
+      },
+    });
+
+    logger(
+      `Updated habit ${habit.name} with ${checkinsModified} checkins modified and ${checkinsUpserted} checkins upserted`,
+      "info",
+    );
   }
   return new Response(
     `Cron job completed with ${checkinsModified} checkins modified and ${checkinsUpserted} checkins upserted`,

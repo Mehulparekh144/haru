@@ -24,17 +24,23 @@ export default async function DashboardPage() {
   }
 
   await fetch(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/cron`, {
-    next: {
-      revalidate: 0.5 * 60 * 60, // 0.5 hours
+    method: "POST",
+    headers: {
+      "x-cron-secret": env.CRON_SECRET,
     },
+    next: {
+      revalidate: env.NODE_ENV === "development" ? 0 : 0.5 * 60 * 60, // 0.5 hours
+    },
+  }).then((res) => {
+    if (!res.ok) {
+      console.error("Failed to fetch cron", res);
+    }
   });
 
   return (
     <div className="relative h-full w-full space-y-4">
       <div className="space-y-1.5">
-        <h1 className="from-primary to-accent bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
-          Welcome Back, {session.user.name}
-        </h1>
+        <h1 className="text-xl font-bold">Welcome Back, {session.user.name}</h1>
         <p className="text-muted-foreground font-mono text-xs">
           What are you up to today?
         </p>
