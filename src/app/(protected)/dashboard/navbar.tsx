@@ -35,7 +35,7 @@ const UserDropdown = async () => {
   });
 
   if (!session?.user) {
-    redirect("/sign-in");
+    redirect("/get-started");
   }
 
   const handleLogout = async () => {

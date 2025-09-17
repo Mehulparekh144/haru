@@ -23,13 +23,14 @@ export default async function DashboardPage() {
     redirect("/get-started");
   }
 
+  // Fail safe if cron job fails
   await fetch(`${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/cron`, {
     method: "POST",
     headers: {
       "x-cron-secret": env.CRON_SECRET,
     },
     next: {
-      revalidate: env.NODE_ENV === "development" ? 0 : 0.5 * 60 * 60, // 0.5 hours
+      revalidate: env.NODE_ENV === "development" ? 0 : 6 * 60 * 60, // 6 hours
     },
   }).then((res) => {
     if (!res.ok) {
