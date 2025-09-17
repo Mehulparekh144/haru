@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${afacadFlux.variable} ${dmMono.variable} ${alkalami.variable} ${afacadFlux.className} dark antialiased`}
+        className={`${afacadFlux.variable} ${dmMono.variable} ${alkalami.variable} ${afacadFlux.className} antialiased`}
         suppressHydrationWarning
       >
         <TRPCReactProvider>

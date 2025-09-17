@@ -25,8 +25,17 @@ export const habitRouter = createTRPCRouter({
     .input(createHabitSchema)
     .mutation(async ({ ctx, input }) => {
       const { name, description, duration, startDate } = input;
-      const endDate = DateTime.fromJSDate(startDate)
+
+      // Ensure startDate is at 00:00:00 in the user's timezone
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const normalizedStartDate = DateTime.fromJSDate(startDate)
+        .setZone(userTimezone)
+        .startOf("day")
+        .toJSDate();
+
+      const endDate = DateTime.fromJSDate(normalizedStartDate)
         .plus({ days: Number(duration) })
+        .endOf("day")
         .toJSDate();
 
       const category = await generateCategory(input);
@@ -35,10 +44,10 @@ export const habitRouter = createTRPCRouter({
         data: {
           name,
           description,
-          startDate,
+          startDate: normalizedStartDate,
           endDate,
           habitCategory: category,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          timezone: userTimezone,
           duration: getDuration(duration),
           userId: ctx.user.id,
         },
@@ -48,8 +57,9 @@ export const habitRouter = createTRPCRouter({
         await ctx.db.habitCheckin.create({
           data: {
             habitId: habit.id,
-            timestamp: DateTime.fromJSDate(startDate)
+            timestamp: DateTime.fromJSDate(normalizedStartDate)
               .plus({ days: i })
+              .startOf("day")
               .toJSDate(),
             status: "PENDING",
           },

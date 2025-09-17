@@ -1,13 +1,8 @@
 import type { CreateHabitFormValues } from "@/app/(protected)/dashboard/create/validations";
-import { env } from "@/env";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import type { HabitCategory } from "@prisma/client";
 import { generateObject } from "ai";
 import z from "zod";
-
-const openrouter = createOpenRouter({
-  apiKey: String(env.OPENAI_API_KEY),
-});
+import { openrouter } from "./llms";
 
 export const generateCategory = async (
   habit: CreateHabitFormValues,

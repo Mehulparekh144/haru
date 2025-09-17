@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { getLocalDates, logger } from "@/lib/utils";
+import { logger } from "@/lib/utils";
 import { db } from "@/server/db";
 import { DateTime } from "luxon";
 
@@ -9,71 +9,58 @@ export const POST = async (req: Request) => {
   }
 
   const habits = await db.habit.findMany();
-
-  // If the hour is 0 and the minute is less than the window minutes, we need to update the checkins
   let checkinsModified = 0;
   let checkinsUpserted = 0;
+
   for (const habit of habits) {
-    const { today, yesterday, hour, minute } = getLocalDates(habit.timezone);
+    const now = DateTime.now().setZone(habit.timezone);
+    const today = now.startOf("day");
+    const yesterday = now.minus({ days: 1 }).startOf("day");
 
-    if (!yesterday || !hour || !minute || !today) continue;
+    // Only mark as skipped if we're past 23:59:59 of yesterday
+    const yesterdayEnd = yesterday.endOf("day");
 
-    // 1. Update all pending checkins for yesterday and earlier to skipped
-    const yesterdayDate = DateTime.fromISO(yesterday)
-      .setZone(habit.timezone)
-      .endOf("day")
-      .toJSDate();
-
-    const updated = await db.habitCheckin.updateMany({
-      where: {
-        habitId: habit.id,
-        timestamp: {
-          lte: yesterdayDate,
+    if (now > yesterdayEnd) {
+      // 1. Mark all pending checkins from yesterday and earlier as skipped
+      const updated = await db.habitCheckin.updateMany({
+        where: {
+          habitId: habit.id,
+          timestamp: {
+            lte: yesterdayEnd.toJSDate(),
+          },
+          status: "PENDING",
         },
-        status: "PENDING",
-      },
-      data: {
-        status: "SKIPPED",
-      },
-    });
-
-    checkinsModified += updated.count;
-
-    // 2. Upsert the pending checkin for today
-    const data = await db.habit.findUnique({
-      where: {
-        id: habit.id,
-      },
-      select: {
-        startDate: true,
-      },
-    });
-
-    if (data && DateTime.fromJSDate(data.startDate) > DateTime.fromISO(today)) {
-      continue;
+        data: {
+          status: "SKIPPED",
+        },
+      });
+      checkinsModified += updated.count;
     }
 
-    const todayDate = DateTime.fromISO(today)
-      .setZone(habit.timezone)
-      .startOf("day")
-      .toJSDate();
+    // 2. Create today's checkin if habit has started
+    const habitStartDate = DateTime.fromJSDate(habit.startDate).setZone(
+      habit.timezone,
+    );
 
-    const upserted = await db.habitCheckin.upsert({
-      where: {
-        habitId_timestamp: {
-          habitId: habit.id,
-          timestamp: todayDate,
+    if (today >= habitStartDate.startOf("day")) {
+      const todayStart = today.startOf("day");
+
+      const upserted = await db.habitCheckin.upsert({
+        where: {
+          habitId_timestamp: {
+            habitId: habit.id,
+            timestamp: todayStart.toJSDate(),
+          },
         },
-      },
-      update: {},
-      create: {
-        habitId: habit.id,
-        timestamp: todayDate,
-        status: "PENDING",
-      },
-    });
-
-    checkinsUpserted += upserted ? 1 : 0;
+        update: {},
+        create: {
+          habitId: habit.id,
+          timestamp: todayStart.toJSDate(),
+          status: "PENDING",
+        },
+      });
+      checkinsUpserted += upserted ? 1 : 0;
+    }
 
     // 3. Update streaks
     const streaks = await db.habitCheckin.findMany({
@@ -116,6 +103,7 @@ export const POST = async (req: Request) => {
       "info",
     );
   }
+
   return new Response(
     `Cron job completed with ${checkinsModified} checkins modified and ${checkinsUpserted} checkins upserted`,
     { status: 200 },

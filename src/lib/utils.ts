@@ -3,6 +3,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { DateTime } from "luxon";
 import { HabitDuration, type HabitCategory } from "@prisma/client";
+import { put, type PutBlobResult } from "@vercel/blob";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -90,3 +91,15 @@ export const getDurationInNumber = (duration: HabitDuration) => {
       return 0;
   }
 };
+
+export async function getPhotoUrl(
+  photo: File,
+  path: string,
+): Promise<string | undefined> {
+  try {
+    const result: PutBlobResult = await put(path, photo, { access: "public" });
+    return result.url;
+  } catch {
+    return undefined;
+  }
+}

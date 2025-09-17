@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { type Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "Build better habits with your AI companion",
 };
 
-export default async function Home() {
+export default function Home() {
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-4">
       <h1 className="text-4xl font-bold">Haru</h1>

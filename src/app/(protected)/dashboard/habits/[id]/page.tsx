@@ -4,8 +4,7 @@ import { WeeklyCalendar } from "./weekly-calendar";
 import { Header } from "./header";
 import { Stats } from "./stats";
 import { BottomNavigation } from "../../bottom-navigation";
-import { Button } from "@/components/ui/button";
-import { CalendarArrowUp } from "lucide-react";
+import { CheckInDialog } from "./check-in-dialog";
 
 export default async function HabitPage({
   params,
@@ -26,14 +25,7 @@ export default async function HabitPage({
       <WeeklyCalendar habitCheckins={habit.habitCheckins} />
       <Stats habit={habit} />
       <BottomNavigation className="rounded-xl">
-        <Button
-          className="group"
-          size={"lg"}
-          variant={"default"}
-          title="Check In"
-        >
-          Check In <CalendarArrowUp className="size-4" />
-        </Button>
+        <CheckInDialog />
       </BottomNavigation>
     </div>
   );
