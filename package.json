@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "cli": "tsx src/lib/cli.ts",
-    "build": "next build && prisma db push --force-reset",
+    "build": "next build && prisma db push --accept-data-loss",
     "check": "next lint && tsc --noEmit",
     "db:generate": "prisma migrate dev",
     "db:migrate": "prisma migrate deploy",
