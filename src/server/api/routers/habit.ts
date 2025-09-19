@@ -181,4 +181,60 @@ export const habitRouter = createTRPCRouter({
 
       return checkin;
     }),
+
+  getUserStats: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.user.id;
+
+    // Get all habits for the user
+    const habits = await ctx.db.habit.findMany({
+      where: { userId },
+      include: {
+        habitCheckins: true,
+      },
+    });
+
+    // Calculate statistics
+    const totalHabits = habits.length;
+    const activeHabits = habits.filter((habit) => {
+      const now = new Date();
+      return new Date(habit.startDate) <= now && new Date(habit.endDate) >= now;
+    }).length;
+
+    const totalCheckins = habits.reduce(
+      (sum, habit) =>
+        sum +
+        habit.habitCheckins.filter((checkin) => checkin.status === "COMPLETED")
+          .length,
+      0,
+    );
+
+    const longestStreak = Math.max(
+      ...habits.map((habit) => habit.longestStreak),
+      0,
+    );
+
+    const totalPossibleCheckins = habits.reduce((sum, habit) => {
+      const startDate = new Date(habit.startDate);
+      const endDate = new Date(habit.endDate);
+      const now = new Date();
+      const actualEndDate = now < endDate ? now : endDate;
+      const daysDiff = Math.ceil(
+        (actualEndDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
+      return sum + Math.max(0, daysDiff);
+    }, 0);
+
+    const successRate =
+      totalPossibleCheckins > 0
+        ? Math.round((totalCheckins / totalPossibleCheckins) * 100)
+        : 0;
+
+    return {
+      totalHabits,
+      activeHabits,
+      totalCheckins,
+      longestStreak,
+      successRate,
+    };
+  }),
 });

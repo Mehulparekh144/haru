@@ -9,10 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { auth } from "@/lib/auth";
-import { LogOut, User2 } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 export const Navbar = () => {
   return (
@@ -67,9 +68,11 @@ const UserDropdown = async () => {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <User2 className="mr-2" />
-          Profile
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/settings" className="flex w-full items-center">
+            <Settings className="mr-2" />
+            Settings
+          </Link>
         </DropdownMenuItem>
         <form action={handleLogout}>
           <DropdownMenuItem asChild>

@@ -8,7 +8,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Box className="max-w-2xl">
+    <Box className="w-screen max-w-4xl">
       <AnimatedContainer>
         <Navbar />
         <div className="h-[calc(100vh-5rem)] w-full">{children}</div>
