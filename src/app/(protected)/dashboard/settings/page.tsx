@@ -46,8 +46,8 @@ export default async function SettingsPage({
         </Button>
         <h1 className="text-2xl font-bold">Settings</h1>
       </div>
-      <div className="grid h-full w-full grid-cols-4 gap-4">
-        <div className="col-span-1 flex h-full flex-col gap-2">
+      <div className="grid h-full w-full grid-cols-1 gap-4 lg:grid-cols-4">
+        <div className="flex flex-col gap-2 lg:col-span-1">
           {columns.map((c) => (
             <Button
               key={c.key}
@@ -62,7 +62,7 @@ export default async function SettingsPage({
             </Button>
           ))}
         </div>
-        <div className="col-span-3">
+        <div className="lg:col-span-3">
           {columns.find((c) => c.key === column)?.content}
         </div>
       </div>

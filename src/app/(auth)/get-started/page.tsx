@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Box } from "@/components/box";
 import { Suspense } from "react";
 import { type Metadata } from "next";
+import { PageLoading } from "@/components/ui/loading";
 
 export const metadata: Metadata = {
   title: "Get Started | Bloom With Haru",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function GetStartedPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PageLoading />}>
       <Box>
         <main className="flex h-full flex-col items-start gap-4 pt-36 md:justify-start">
           <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">

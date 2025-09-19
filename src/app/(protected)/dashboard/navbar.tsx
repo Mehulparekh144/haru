@@ -19,10 +19,12 @@ export const Navbar = () => {
   return (
     <>
       <nav className="border-offset flex items-center justify-between pt-3">
-        <div className="flex items-center gap-2">
-          <Image src="/images/logo.png" alt="Haru" width={32} height={32} />
-          <h1 className="text-2xl font-bold">Haru</h1>
-        </div>
+        <Link href="/">
+          <div className="flex items-center gap-2">
+            <Image src="/images/logo.png" alt="Haru" width={32} height={32} />
+            <h1 className="text-2xl font-bold">Haru</h1>
+          </div>
+        </Link>
         <UserDropdown />
       </nav>
       <Separator className="my-2" />
