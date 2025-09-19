@@ -1,29 +1,177 @@
-# Create T3 App
+# Haru - Gentle Accountability
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+> The calm accountability app that helps you build real habits through gentle, proof-based check-ins.
 
-## What's next? How do I make an app with this?
+![Haru Logo](/public/images/logo.png)
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 🌸 What is Haru?
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Haru is an accountability app that uses AI to make sure you actually do what you said you'd do. It's not a habit tracker full of charts and streaks you can game. It's a mirror: you either show up with proof every day, or your streak dies.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+**Simple. Brutal. Honest.**
 
-## Learn More
+## ✨ Core Features
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### 🎯 Daily Streaks
+- Set a habit (Gym, Code, or Study)
+- One rule: show proof every day
+- Miss once? Start over
+- Simple. Calm. Consistent
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### 🤖 AI-Validated Check-Ins
+- Upload proof → AI gently verifies it
+- **Gym**: Recognizes your effort and equipment
+- **Code**: Acknowledges your work and commits
+- **Study**: Celebrates your learning materials
+- No stock pics, no cheating
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### 📊 Visual Progress
+- Weekly streak view (✅ / ❌ / pending)
+- Monthly calendar: calm, clear
+- Current & longest streak stats
+- No pressure, just awareness
 
-## How do I deploy this?
+### 💝 Gentle Reminders
+- Calm, supportive messaging
+- "You're building something beautiful"
+- AI as your peaceful companion
+- Encouraging without pressure
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### 🎨 Minimal Design
+- No distractions, no overwhelming features
+- AI = one peaceful role: gently validate your progress
+- Build your chain, one day at a time
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm, yarn, or pnpm
+- PostgreSQL database
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Mehulparekh144/haru.git
+   cd haru
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Fill in your environment variables:
+   ```env
+   DATABASE_URL="postgresql://postgres:password@localhost:5432/app"
+    BETTER_AUTH_SECRET=your-secret-key
+    NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000 
+    OPENAI_API_KEY=openai-key
+    CRON_SECRET=anysecret
+    BLOB_READ_WRITE_TOKEN="blob_token_from_vercel"
+   ```
+
+4. **Set up the database**
+   ```bash
+   npx prisma migrate dev
+   npx prisma generate
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 🏗️ Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Shadcn UI + Radix UI
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: BetterAuth.js
+- **AI**: Openrouter
+- **Deployment**: Vercel (recommended)
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Authentication routes
+│   ├── (protected)/       # Protected dashboard routes
+│   ├── api/               # API routes
+│   └── page.tsx           # Landing page
+├── components/            # Reusable components
+│   └── ui/               # Shadcn UI components
+├── lib/                  # Utility functions
+├── server/               # Server-side code
+│   └── api/              # tRPC routers
+└── styles/               # Global styles
+```
+
+## 🎨 Design Philosophy
+
+Haru follows a **calm, zen-like design philosophy**:
+
+- **Gentle Colors**: Warm, muted color palette
+- **Peaceful Typography**: Serif for emotion, mono for process
+- **Minimal Interface**: No distractions, focus on the core loop
+- **Proof-Based**: External accountability through AI validation
+- **No Gamification**: Simple, honest progress tracking
+
+## 🔧 Development
+
+### Available Scripts
+
+```bash
+yarn dev          # Start development server
+yarn build        # Build for production
+yarn start        # Start production server
+yarn lint         # Run ESLint
+```
+
+### Database Management
+
+```bash
+npx prisma studio           # Open Prisma Studio
+npx prisma migrate dev      # Create and apply migration
+npx prisma generate         # Generate Prisma client
+npx prisma db push          # Push schema changes
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- UI components from [Shadcn UI](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
+- Typography from [Google Fonts](https://fonts.google.com/)
+- Auth from [Better-Auth](https://www.better-auth.com/)
+- Cron Jobs [Cron-Job](https://cron-job.org/)
+- AI-SDK + OpenRouter
+
+---
+
+**Haru** - Your gentle companion for building real habits 🌸
