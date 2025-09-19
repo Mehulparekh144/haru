@@ -2,7 +2,7 @@
 
 > The calm accountability app that helps you build real habits through gentle, proof-based check-ins.
 
-![Haru Logo](/public/images/logo.png)
+<img src="/public/images/logo.png" alt="Haru Logo" style="width:200px; height:auto;" />
 
 ## 🌸 What is Haru?
 
