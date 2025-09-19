@@ -48,8 +48,7 @@ export const WeeklyCalendar = ({
           {weekDates.map((date) => {
             const habitCheckin = habitCheckins?.find(
               (checkin) =>
-                DateTime.fromJSDate(checkin.timestamp).toISODate() ===
-                date.date,
+                DateTime.fromJSDate(checkin.date).toISODate() === date.date,
             );
             return (
               <Tooltip key={date.date}>
