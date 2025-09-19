@@ -20,9 +20,10 @@ export default async function HabitPage({
     redirect("/not-found");
   }
 
-  const todayCheckin = habit.habitCheckins.find((checkin) =>
-    DateTime.fromJSDate(checkin.timestamp).hasSame(DateTime.now(), "day"),
-  );
+  const today = DateTime.now().startOf("day").toJSDate();
+  const todayCheckin = habit.habitCheckins.find((checkin) => {
+    return checkin.date === today;
+  });
 
   return (
     <div className="relative h-full w-full space-y-6">

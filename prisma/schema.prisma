@@ -124,13 +124,13 @@ model HabitCheckin {
   id          String             @id @default(uuid())
   habitId     String
   habit       Habit              @relation(fields: [habitId], references: [id], onDelete: Cascade)
-  timestamp   DateTime
+  date        DateTime           @db.Date
   description String?
   photoURL    String?
   status      HabitCheckinStatus @default(PENDING)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 
-  @@unique([habitId, timestamp])
+  @@unique([habitId, date])
   @@map("habit_checkin")
 }

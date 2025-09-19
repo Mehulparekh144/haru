@@ -9,6 +9,7 @@ import { type Habit, type HabitCheckin } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { HabitTotalDoneProgress } from "./habits/habit-total-done-progress";
 import { Badge } from "@/components/ui/badge";
+import { ArrowDown } from "lucide-react";
 
 export const HabitsSection = () => {
   const router = useRouter();
@@ -86,6 +87,15 @@ export const HabitsSection = () => {
             ))
           )}
         </div>
+        {data?.length === 0 && (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-4">
+            <p className="font-mono text-base">
+              Let&apos;s get started! Create your first habit by clicking the
+              button below.
+            </p>
+            <ArrowDown className="size-4 animate-bounce" />
+          </div>
+        )}
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </section>

@@ -207,15 +207,13 @@ export const CheckInDialog = ({
           size={"lg"}
           variant={"default"}
           title={
-            !todayCheckin || todayCheckin?.status !== "PENDING"
+            todayCheckin?.status !== "PENDING"
               ? "You have already checked in today"
               : "Check In"
           }
-          disabled={!todayCheckin || todayCheckin?.status !== "PENDING"}
+          disabled={todayCheckin?.status !== "PENDING"}
         >
-          {todayCheckin && todayCheckin?.status !== "PENDING"
-            ? "Check In Done"
-            : "Check In"}
+          {todayCheckin?.status !== "PENDING" ? "Check In Done" : "Check In"}
           <CalendarArrowUp className="size-4 transition-transform duration-300 group-hover:scale-110" />
         </Button>
       </DialogTrigger>

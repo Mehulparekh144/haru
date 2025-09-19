@@ -58,7 +58,7 @@ export const habitRouter = createTRPCRouter({
         await ctx.db.habitCheckin.create({
           data: {
             habitId: habit.id,
-            timestamp: DateTime.fromJSDate(normalizedStartDate)
+            date: DateTime.fromJSDate(normalizedStartDate)
               .plus({ days: i })
               .startOf("day")
               .toJSDate(),
@@ -139,15 +139,11 @@ export const habitRouter = createTRPCRouter({
         throw new Error("Habit not found");
       }
 
-      const startOfDay = DateTime.now().startOf("day").toJSDate();
-      const endOfDay = DateTime.now().endOf("day").toJSDate();
+      const today = DateTime.now().startOf("day").toJSDate();
       const checkin = await ctx.db.habitCheckin.findFirst({
         where: {
           habitId: id,
-          timestamp: {
-            gte: startOfDay,
-            lte: endOfDay,
-          },
+          date: today,
         },
       });
 
@@ -165,7 +161,7 @@ export const habitRouter = createTRPCRouter({
             habitId: id,
             photoURL,
             status: "COMPLETED",
-            timestamp: new Date(),
+            date: today,
             description,
           },
         });

@@ -25,7 +25,7 @@ export const POST = async (req: Request) => {
       const updated = await db.habitCheckin.updateMany({
         where: {
           habitId: habit.id,
-          timestamp: {
+          date: {
             lte: yesterdayEnd.toJSDate(),
           },
           status: "PENDING",
@@ -47,15 +47,15 @@ export const POST = async (req: Request) => {
 
       const upserted = await db.habitCheckin.upsert({
         where: {
-          habitId_timestamp: {
+          habitId_date: {
             habitId: habit.id,
-            timestamp: todayStart.toJSDate(),
+            date: todayStart.toJSDate(),
           },
         },
         update: {},
         create: {
           habitId: habit.id,
-          timestamp: todayStart.toJSDate(),
+          date: todayStart.toJSDate(),
           status: "PENDING",
         },
       });
@@ -68,7 +68,7 @@ export const POST = async (req: Request) => {
         habitId: habit.id,
       },
       orderBy: {
-        timestamp: "desc",
+        date: "desc",
       },
     });
 
