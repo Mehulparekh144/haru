@@ -121,13 +121,15 @@ enum HabitCheckinStatus {
 }
 
 model HabitCheckin {
-  id        String             @id @default(uuid())
-  habitId   String
-  habit     Habit              @relation(fields: [habitId], references: [id], onDelete: Cascade)
-  timestamp DateTime
-  status    HabitCheckinStatus @default(PENDING)
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  id          String             @id @default(uuid())
+  habitId     String
+  habit       Habit              @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  timestamp   DateTime
+  description String?
+  photoURL    String?
+  status      HabitCheckinStatus @default(PENDING)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   @@unique([habitId, timestamp])
   @@map("habit_checkin")

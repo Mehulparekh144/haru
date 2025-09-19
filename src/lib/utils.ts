@@ -97,9 +97,12 @@ export async function getPhotoUrl(
   path: string,
 ): Promise<string | undefined> {
   try {
-    const result: PutBlobResult = await put(path, photo, { access: "public" });
+    const result: PutBlobResult = await put(path, photo, {
+      access: "public",
+    });
     return result.url;
-  } catch {
+  } catch (error) {
+    console.error(`Failed to get photo URL ${error as string}`);
     return undefined;
   }
 }

@@ -4,6 +4,7 @@ import { HabitDuration } from "@prisma/client";
 import { generateCategory } from "@/lib/ai/category-choosing-agent";
 import { DateTime } from "luxon";
 import { z } from "zod";
+import { validatePhoto } from "@/lib/ai/photo-validating-client";
 
 const getDuration = (duration: string): HabitDuration => {
   switch (duration) {
@@ -100,5 +101,84 @@ export const habitRouter = createTRPCRouter({
       });
 
       return habit;
+    }),
+
+  validateHabitPhoto: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        photoURL: z.url(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, photoURL } = input;
+
+      const habit = await ctx.db.habit.findUnique({
+        where: { id },
+      });
+      if (!habit) {
+        throw new Error("Habit not found");
+      }
+
+      const validation = await validatePhoto(photoURL, habit);
+
+      return { ...validation, photoURL };
+    }),
+
+  checkIn: protectedProcedure
+    .input(
+      z.object({ id: z.string(), description: z.string(), photoURL: z.url() }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, description, photoURL } = input;
+
+      const habit = await ctx.db.habit.findUnique({
+        where: { id },
+      });
+      if (!habit) {
+        throw new Error("Habit not found");
+      }
+
+      const startOfDay = DateTime.now().startOf("day").toJSDate();
+      const endOfDay = DateTime.now().endOf("day").toJSDate();
+      const checkin = await ctx.db.habitCheckin.findFirst({
+        where: {
+          habitId: id,
+          timestamp: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
+      });
+
+      const longestStreak = habit.longestStreak;
+      const currentStreak = habit.currentStreak;
+
+      if (checkin) {
+        await ctx.db.habitCheckin.update({
+          where: { id: checkin.id },
+          data: { photoURL, status: "COMPLETED", description },
+        });
+      } else {
+        await ctx.db.habitCheckin.create({
+          data: {
+            habitId: id,
+            photoURL,
+            status: "COMPLETED",
+            timestamp: new Date(),
+            description,
+          },
+        });
+      }
+
+      await ctx.db.habit.update({
+        where: { id },
+        data: {
+          longestStreak: Math.max(longestStreak, currentStreak + 1),
+          currentStreak: currentStreak + 1,
+        },
+      });
+
+      return checkin;
     }),
 });
